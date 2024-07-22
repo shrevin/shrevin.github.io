@@ -9,16 +9,16 @@
     background: white;
     border: 1px;
 }
-.my-button {
+#my-button {
     border: none;
     font-size: 16px;
-    font-family: Playfair Display;
+    font-family:  'Baloo 2' ;
     text-align: center;
-    padding: 32px;
+    padding: 10px;
     cursor: pointer;
-    background-color: darkgreen; 
-    border-radius: 30px;
-    padding: 20px; 
+    background-color: black; 
+    border-radius: 10px;
+    padding: 10px; 
     color: whitesmoke;
   }
 </style>
@@ -28,31 +28,84 @@
 <div id = "tooltip"></div>
 
 <div>
-      <h2 style="font-family: 'Baloo 2'"> Top 24 Most Streamed Spotify Songs </h2>
+      <h2 style="font-family: 'Baloo 2'"> Top 25 Most Streamed Spotify Songs </h2>
       <p style="font-family: 'Baloo 2'"> 
-        Each bar is color-coded by the artist. Hover over bars to see the exact number of streams and the artist.
+        This chart shows the top 25 streamed songs on Spotify in descending order. The bars are color-coded by the artist. Hover over a bar to see the exact number of streams and the artist.
         <ul style="font-family: 'Baloo 2'">
-            <li>The song, Blinding Lights by the Weeknd is the most popular song on Spotify.</li>
-            <li>Pop and rap seem to be the most popular genres.</li>
+            <li>Blinding Lights by the Weeknd is the most popular song on Spotify.</li>
+            <li>Pop and rap are the most popular genres.</li>
             <li> The Weeknd, Ed Sheeran, Post Malone, Drake, and Harry Styles are few artists with multiple songs in this list.</li>
-            <li> There is a higher number of male artists compared to female artists in the top 24.</li>
-            <li>The highest streamed song has around 2 billion more streams than the 24th highest streamed song, highlighting a large difference even in the top 24.</li>
+            <li> Ed Sheeran is the only artist with 3 songs in this list: Shape of You, Perfect, and Photograph. </li>
+            <li> There is a higher number of male artists compared to female artists in the top 25.</li>
+            <li>The highest streamed song has around 2 billion more streams than the 24th highest streamed song, highlighting a large difference even in the top 25.</li>
         </ul>
      </p>
 </div>
 </div>
-<button id="my-button" class="navigate-button" onclick="location.href='index.html'">Home</button>
+<button id="my-button" onclick="location.href='index.html'">Home</button>
 </div>
 </div>
-<button id="my-button" class="navigate-button" onclick="location.href='scene2.html'">Next</button>
+<button id="my-button" onclick="location.href='scene2.html'">Next</button>
 </div>
-<svg width=1500 height=800></svg>
+<svg width=1600 height=900></svg>
 <script>
 async function init() {
+
+    d3.select("svg")
+    .append("text")
+    .attr("x", 160)
+    .attr("y", 60)
+    .style("font-size", "12px")
+    .style("fill", "black")
+    .text("by Ed Sheeran");
+
+    d3.select("svg")
+    .append("line")
+    .attr("x1", 190)
+    .attr("y1", 70)
+    .attr("x2", 180)
+    .attr("y2", 90)
+    .attr("stroke", "black")
+    .attr("stroke-width", 2);
+
+    d3.select("svg")
+    .append("text")
+    .attr("x", 700)
+    .attr("y", 160)
+    .style("font-size", "12px")
+    .style("fill", "black")
+    .text("by Ed Sheeran");
+
+    d3.select("svg")
+    .append("line")
+    .attr("x1", 730)
+    .attr("y1", 170)
+    .attr("x2", 720)
+    .attr("y2", 190)
+    .attr("stroke", "black")
+    .attr("stroke-width", 2);
+
+    d3.select("svg")
+    .append("text")
+    .attr("x", 1390)
+    .attr("y", 220)
+    .style("font-size", "12px")
+    .style("fill", "black")
+    .text("by Ed Sheeran");
+
+    d3.select("svg")
+    .append("line")
+    .attr("x1", 1430)
+    .attr("y1", 230)
+    .attr("x2", 1420)
+    .attr("y2", 250)
+    .attr("stroke", "black")
+    .attr("stroke-width", 2);
+
     data = await d3.csv("songs.csv");
     data.forEach(d => d['Spotify Streams'] = +d['Spotify Streams'].replace(/,/g, ''));
 
-    top_data = data.sort((a,b) => d3.descending(a['Spotify Streams'], b['Spotify Streams'])).slice(0,29)
+    top_data = data.sort((a,b) => d3.descending(a['Spotify Streams'], b['Spotify Streams'])).slice(0,30)
     largest_val = d3.max(top_data, d => d['Spotify Streams']);
 
     var y = d3.scaleLinear()
@@ -119,7 +172,12 @@ async function init() {
     .attr("y", height - 6)
     .text("Artist Names");
 
-}
+    const firstBar = top_data[0];
+    const firstBarX = x(firstBar['Track']) + x.bandwidth() / 2;
+    const firstBarY = y(firstBar['Spotify Streams']);
+
+    
+}   
 </script>
 </body>
 </html>

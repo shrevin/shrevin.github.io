@@ -9,6 +9,18 @@
     background: white;
     border: 1px;
 }
+#my-button {
+    border: none;
+    font-size: 16px;
+    font-family:  'Baloo 2' ;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    background-color: black; 
+    border-radius: 10px;
+    padding: 10px; 
+    color: whitesmoke;
+  }
 </style>
 
 <body onload='init()'>
@@ -22,10 +34,10 @@
      </p>
 </div>
 </div>
-<button class="navigate-button" onclick="location.href='scene2.html'">Previous</button>
+<button id = "my-button" class="navigate-button" onclick="location.href='scene2.html'">Previous</button>
 </div>
 </div>
-<button class="navigate-button" onclick="location.href='index.html'">Home</button>
+<button id = "my-button" class="navigate-button" onclick="location.href='index.html'">Home</button>
 </div>
 <svg width=1500 height=800></svg>
 <script>

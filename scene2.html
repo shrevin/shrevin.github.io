@@ -9,6 +9,30 @@
     background: white;
     border: 1px;
 }
+#my-button {
+    border: none;
+    font-size: 16px;
+    font-family:  'Baloo 2' ;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    background-color: black; 
+    border-radius: 10px;
+    padding: 10px; 
+    color: whitesmoke;
+  }
+#shuffleButton {
+    border: none;
+    font-size: 16px;
+    font-family:  'Baloo 2' ;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    background-color: black; 
+    border-radius: 10px;
+    padding: 10px; 
+    color: whitesmoke;
+  }
 </style>
 
 <body onload='init()'>
@@ -22,10 +46,10 @@
      </p>
 </div>
 </div>
-<button class="navigate-button" onclick="location.href='scene1.html'">Previous</button>
+<button id = "my-button" class="navigate-button" onclick="location.href='scene1.html'">Previous</button>
 </div>
 </div>
-<button class="navigate-button" onclick="location.href='scene3.html'">Next</button>
+<button id = "my-button" class="navigate-button" onclick="location.href='scene3.html'">Next</button>
 </div>
 </div>
 <button id="shuffleButton">Shuffle</button>
@@ -42,7 +66,7 @@ async function init() {
     data.forEach(d => d['Spotify Streams'] = +d['Spotify Streams'].replace(/,/g, ''));
     d3.select("#title").text("SHUFFLE MODE: Top " + (rand_num - 19) + "th to " + rand_num + "th Streamed Spotify Songs")
 
-    top_data = data.sort((a,b) => d3.descending(a['Spotify Streams'], b['Spotify Streams'])).slice(rand_num,rand_num+19)
+    top_data = data.sort((a,b) => d3.descending(a['Spotify Streams'], b['Spotify Streams'])).slice(rand_num,rand_num+15)
     largest_val = d3.max(top_data, d => d['Spotify Streams']);
     smallest_val = d3.min(top_data, d => d['Spotify Streams']);
 
@@ -68,7 +92,7 @@ async function init() {
     .append("rect")
     .attr("x", d => x(d['Track']))
     .attr("y", d => y(Number(d['Spotify Streams'])))
-    .attr("width", x.bandwidth() - 20)
+    .attr("width", x.bandwidth() - 5)
     .attr("height", d => 500 - y(Number(d['Spotify Streams'])))
     .attr("fill", "mediumseagreen")
     .attr("rx", 10)
@@ -96,7 +120,7 @@ async function init() {
     .style("text-anchor", "end")
     .attr("transform", "rotate(-45)");;
 
-   
+    
 
     
 
