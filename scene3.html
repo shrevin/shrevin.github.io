@@ -1,0 +1,94 @@
+<html>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<style> 
+#tooltip {
+    opacity: 0;
+    position: absolute;
+    text-align: center;
+    width: 300px; height: 60px;
+    background: white;
+    border: 1px;
+}
+</style>
+
+<body onload='init()'>
+
+<div id = "tooltip"></div>
+
+<div>
+      <h2 style="font-family: 'Baloo 2'"> YouTube Views vs. Spotify Streams </h2>
+      <p style="font-family: 'Baloo 2'"> 
+        Do the number of YouTube views affect the number of Spotify streams? 
+     </p>
+</div>
+</div>
+<button class="navigate-button" onclick="location.href='scene2.html'">Previous</button>
+</div>
+</div>
+<button class="navigate-button" onclick="location.href='index.html'">Home</button>
+</div>
+<svg width=1500 height=800></svg>
+<script>
+async function init() {
+    data = await d3.csv("songs.csv");
+
+    // replacing commas with empty string
+    data.forEach(d => d['Spotify Streams'] = +d['Spotify Streams'].replace(/,/g, ''));
+    data.forEach(d => d['YouTube Views'] = +d['YouTube Views'].replace(/,/g, ''));
+    data.forEach(d => d['Track Score'] = +d['Track Score'].replace(/,/g, ''));
+
+    top_data = data.sort((a,b) => d3.descending(a['Spotify Streams'], b['Spotify Streams'])).slice(0,100)
+    largest_val = d3.max(top_data, d => d['Spotify Streams']);
+    largest_val_yt = d3.max(top_data, d => d['YouTube Views']);
+
+    largest_track_score = d3.max(top_data, d => d['Track Score']);
+
+    smallest_val = d3.min(top_data, d => d['Spotify Streams']);
+    smallest_val_yt = d3.min(top_data, d => d['YouTube Views']);
+
+    const color = d3.scaleSequential(d3.interpolateBlues)
+        .domain(top_data.map(d => d['Track Score']));
+
+
+    var y = d3.scaleLog()
+    .domain([smallest_val, largest_val])
+    .range([500, 0])
+    .base(10);
+
+    var x = d3.scaleLog()
+    .domain([100000000, largest_val_yt])
+    .range([0, 1350])
+    .base(10);
+
+    var r_scale = d3.scaleLinear()
+    .domain([0, largest_track_score])
+    .range([5, 20]);
+
+    d3.select("svg")
+    .append("g")
+    .attr("transform", "translate(100,50)")
+    .selectAll("circle")
+    .data(top_data)
+    .enter()
+    .append("circle")
+    .attr("cx", d => x(d['YouTube Views']))
+    .attr("cy", d => y(d['Spotify Streams']))
+    .attr("r",  d => r_scale(d['Track Score']))
+    .attr("fill", d => color(d['Track Score']));
+
+    const y_axis = d3.select("svg")
+    .append("g")
+    .attr("transform", "translate(100,50)")
+    .call(d3.axisLeft(y));
+
+    const x_axis = d3.select("svg")
+    .append("g")
+    .attr("transform", "translate(100,550)")
+    .call(d3.axisBottom(x));
+
+}
+</script>
+</body>
+</html>
+
+

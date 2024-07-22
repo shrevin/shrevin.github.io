@@ -1,0 +1,109 @@
+<html>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<style> 
+#tooltip {
+    opacity: 0;
+    position: absolute;
+    text-align: center;
+    width: 300px; height: 60px;
+    background: white;
+    border: 1px;
+}
+</style>
+
+<body onload='init()'>
+
+<div id = "tooltip"></div>
+
+<div>
+      <h2 style="font-family: 'Baloo 2'" id="title"> SHUFFLE MODE: Top 15 Most Streamed Spotify Songs </h2>
+      <p style="font-family: 'Baloo 2'"> 
+        Each bar is color-coded by the artist. Hover over bars to see the exact number of streams and the artist. Click shuffle to generate songs in a random range. See if you can find your favorite artist!
+     </p>
+</div>
+</div>
+<button class="navigate-button" onclick="location.href='scene1.html'">Previous</button>
+</div>
+</div>
+<button class="navigate-button" onclick="location.href='scene3.html'">Next</button>
+</div>
+</div>
+<button id="shuffleButton">Shuffle</button>
+</div>
+<svg width=1500 height=800></svg>
+<script>
+document.getElementById('shuffleButton').addEventListener('click', init);
+
+async function init() {
+    d3.select("svg").selectAll("*").remove()
+    rand_num = Math.floor(Math.random() * 3000);
+    data = await d3.csv("songs.csv");
+
+    data.forEach(d => d['Spotify Streams'] = +d['Spotify Streams'].replace(/,/g, ''));
+    d3.select("#title").text("SHUFFLE MODE: Top " + (rand_num - 19) + "th to " + rand_num + "th Streamed Spotify Songs")
+
+    top_data = data.sort((a,b) => d3.descending(a['Spotify Streams'], b['Spotify Streams'])).slice(rand_num,rand_num+19)
+    largest_val = d3.max(top_data, d => d['Spotify Streams']);
+    smallest_val = d3.min(top_data, d => d['Spotify Streams']);
+
+    var y = d3.scaleLinear()
+    .domain([smallest_val,largest_val])
+    .range([500, 0]);
+
+    var x = d3.scaleBand()
+    .domain(top_data.map(d => d['Track']))
+    .range([0, 1350]);
+
+    var tooltip = d3.select("#tooltip");
+    const formatComma = d3.format(",");
+    const color = d3.scaleOrdinal(d3.schemeSet3)
+        .domain(top_data.map(d => d['Artist']));
+
+    d3.select("svg")
+    .append("g")
+    .attr("transform", "translate(100,50)")
+    .selectAll("rect")
+    .data(top_data)
+    .enter()
+    .append("rect")
+    .attr("x", d => x(d['Track']))
+    .attr("y", d => y(Number(d['Spotify Streams'])))
+    .attr("width", x.bandwidth() - 20)
+    .attr("height", d => 500 - y(Number(d['Spotify Streams'])))
+    .attr("fill", "mediumseagreen")
+    .attr("rx", 10)
+    .on("mouseover", function(d,i) {
+        tooltip.style("opacity", 1)
+        .style("left", (d3.event.pageX) + "px")
+        .style("top", (d3.event.pageY) + "px")
+        .html(d['Track']+ ": " + formatComma(d['Spotify Streams']) + " streams\n\n" + "Artist: " + d['Artist'])
+    })
+    .attr("fill", d => color(d['Artist']))
+    .on("mouseout", function() {tooltip.style("opacity", 0)});
+
+    const y_axis = d3.select("svg")
+    .append("g")
+    .attr("transform", "translate(100,50)")
+    .call(d3.axisLeft(y));
+
+    const x_axis = d3.select("svg")
+    .append("g")
+    .attr("transform", "translate(100,550)")
+    .call(d3.axisBottom(x));
+
+    x_axis.selectAll("text")
+    .style("font-size", "10px")
+    .style("text-anchor", "end")
+    .attr("transform", "rotate(-45)");;
+
+   
+
+    
+
+
+}
+</script>
+</body>
+</html>
+
+
