@@ -43,7 +43,11 @@
       <h2 style="font-family: 'Baloo 2'" id="title"> SHUFFLE MODE: Top 15 Most Streamed Spotify Songs </h2>
       <p style="font-family: 'Baloo 2'"> 
         Each bar is color-coded by the artist. Hover over bars to see the exact number of streams and the artist. Click shuffle to generate songs in a random range. See if you can find your favorite artist!
-     </p>
+        <ul style="font-family: 'Baloo 2'">
+            <li> Notice how it's hard to find multiple of the same artists within groups of 15 or less songs. </li>
+            <li> There's a high difference between the most streamed song in a group versus the least streamed song.</li>
+            <li> The tooltip also contains the release date. Notice how it is more likely that older songs have more streams!</li>
+    </p>
 </div>
 </div>
 <button id = "my-button" class="navigate-button" onclick="location.href='scene1.html'">Previous</button>
@@ -71,17 +75,26 @@ async function init() {
     smallest_val = d3.min(top_data, d => d['Spotify Streams']);
 
     var y = d3.scaleLinear()
-    .domain([smallest_val,largest_val])
+    .domain([smallest_val - 100000,largest_val])
     .range([500, 0]);
 
     var x = d3.scaleBand()
     .domain(top_data.map(d => d['Track']))
-    .range([0, 1350]);
+    .range([0, 1350])
+    .padding(0.1);
 
     var tooltip = d3.select("#tooltip");
     const formatComma = d3.format(",");
-    const color = d3.scaleOrdinal(d3.schemeSet3)
+
+    const customColors = [
+    "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
+    "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
+    "#aec7e8", "#ffbb78", "#98df8a", "#ff9896", "#c5b0d5",
+    "#c49c94", "#f7b6d2", "#c7c7c7", "#dbdb8d", "#9edae5",
+    ];
+    const color = d3.scaleOrdinal(customColors)
         .domain(top_data.map(d => d['Artist']));
+
 
     d3.select("svg")
     .append("g")
@@ -92,15 +105,14 @@ async function init() {
     .append("rect")
     .attr("x", d => x(d['Track']))
     .attr("y", d => y(Number(d['Spotify Streams'])))
-    .attr("width", x.bandwidth() - 5)
+    .attr("width", x.bandwidth())
     .attr("height", d => 500 - y(Number(d['Spotify Streams'])))
-    .attr("fill", "mediumseagreen")
     .attr("rx", 10)
     .on("mouseover", function(d,i) {
         tooltip.style("opacity", 1)
         .style("left", (d3.event.pageX) + "px")
         .style("top", (d3.event.pageY) + "px")
-        .html(d['Track']+ ": " + formatComma(d['Spotify Streams']) + " streams\n\n" + "Artist: " + d['Artist'])
+        .html(d['Track']+ ": " + formatComma(d['Spotify Streams']) + " streams\n\n" + " | Artist: " + d['Artist'] + " | Release Date: " + d['Release Date'])
     })
     .attr("fill", d => color(d['Artist']))
     .on("mouseout", function() {tooltip.style("opacity", 0)});
@@ -118,12 +130,7 @@ async function init() {
     x_axis.selectAll("text")
     .style("font-size", "10px")
     .style("text-anchor", "end")
-    .attr("transform", "rotate(-45)");;
-
-    
-
-    
-
+    .attr("transform", "rotate(-45)");
 
 }
 </script>

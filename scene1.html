@@ -140,13 +140,13 @@ async function init() {
     .attr("height", d => 500 - y(Number(d['Spotify Streams'])))
     .attr("fill", "mediumseagreen")
     .attr("rx", 10)
+    .attr("fill", d => color(d['Artist']))
     .on("mouseover", function(d,i) {
         tooltip.style("opacity", 1)
         .style("left", (d3.event.pageX) + "px")
         .style("top", (d3.event.pageY) + "px")
         .html(d['Track']+ ": " + formatComma(d['Spotify Streams']) + " streams\n\n" + "| Artist: " + d['Artist'])
     })
-    .attr("fill", d => color(d['Artist']))
     .on("mouseout", function() {tooltip.style("opacity", 0)});
 
     const y_axis = d3.select("svg")

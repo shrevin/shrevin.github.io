@@ -31,6 +31,13 @@
       <h2 style="font-family: 'Baloo 2'"> YouTube Views vs. Spotify Streams </h2>
       <p style="font-family: 'Baloo 2'"> 
         Do the number of YouTube views affect the number of Spotify streams? 
+        <ul style="font-family: 'Baloo 2'">
+            <li>The color and radius of the circles correspond to the track score. Darker color indicates a higher track score. </li>
+            <li>There doesn't seems to be a strong correlation between YouTube views and Spotify streams.</li>
+            <li>The song Uptown Funk has high YouTube views but lower Spotify streams.</li>
+            <li> The song Blinding Lights has low YouTube views but higher Spotify streams. </li>
+            <li> There seems to be a correlation where songs with higher track scores have more YouTube views. There is a trend of darker colors moving outwards.</li>
+        </ul>
      </p>
 </div>
 </div>
@@ -49,7 +56,7 @@ async function init() {
     data.forEach(d => d['YouTube Views'] = +d['YouTube Views'].replace(/,/g, ''));
     data.forEach(d => d['Track Score'] = +d['Track Score'].replace(/,/g, ''));
 
-    top_data = data.sort((a,b) => d3.descending(a['Spotify Streams'], b['Spotify Streams'])).slice(0,100)
+    top_data = data.sort((a,b) => d3.descending(a['Spotify Streams'], b['Spotify Streams'])).slice(0,150)
     largest_val = d3.max(top_data, d => d['Spotify Streams']);
     largest_val_yt = d3.max(top_data, d => d['YouTube Views']);
 
@@ -58,27 +65,30 @@ async function init() {
     smallest_val = d3.min(top_data, d => d['Spotify Streams']);
     smallest_val_yt = d3.min(top_data, d => d['YouTube Views']);
 
-    const color = d3.scaleSequential(d3.interpolateBlues)
+    const color = d3.scaleSequential(d3.interpolateMagma)
         .domain(top_data.map(d => d['Track Score']));
 
 
-    var y = d3.scaleLog()
+    var y = d3.scaleLinear()
     .domain([smallest_val, largest_val])
     .range([500, 0])
-    .base(10);
+   ;
 
-    var x = d3.scaleLog()
+    var x = d3.scaleLinear()
     .domain([100000000, largest_val_yt])
     .range([0, 1350])
-    .base(10);
+    ;
 
     var r_scale = d3.scaleLinear()
     .domain([0, largest_track_score])
     .range([5, 20]);
 
+    var tooltip = d3.select("#tooltip");
+    const formatComma = d3.format(",");
+
     d3.select("svg")
     .append("g")
-    .attr("transform", "translate(100,50)")
+    .attr("transform", "translate(200,50)")
     .selectAll("circle")
     .data(top_data)
     .enter()
@@ -86,17 +96,85 @@ async function init() {
     .attr("cx", d => x(d['YouTube Views']))
     .attr("cy", d => y(d['Spotify Streams']))
     .attr("r",  d => r_scale(d['Track Score']))
-    .attr("fill", d => color(d['Track Score']));
+    .attr("fill", d => color(d['Track Score']))
+    .attr("stroke", "black")
+    .attr("stroke-width", 1)
+    .on("mouseover", function(d,i) {
+        tooltip.style("opacity", 1)
+        .style("left", (d3.event.pageX) + "px")
+        .style("top", (d3.event.pageY) + "px")
+        .html(d['Track']+ ": " + formatComma(d['Spotify Streams']) + " streams\n\n" + " | Artist: " + d['Artist'] + 
+        " | Track Score: " + d['Track Score'])
+    })
+    .on("mouseout", function() {tooltip.style("opacity", 0)});;
 
     const y_axis = d3.select("svg")
     .append("g")
-    .attr("transform", "translate(100,50)")
+    .attr("transform", "translate(200,50)")
     .call(d3.axisLeft(y));
 
     const x_axis = d3.select("svg")
     .append("g")
-    .attr("transform", "translate(100,550)")
+    .attr("transform", "translate(200,550)")
     .call(d3.axisBottom(x));
+
+    d3.select("svg")
+    .append("text")
+    .attr("text-anchor", "end")
+    .attr("x", 800) 
+    .attr("y", 590) 
+    .text("YouTube Views")
+    .style("font-family", "Baloo 2")
+    .style("font-size", "16px");
+
+    d3.select("svg")
+    .append("text")
+    .attr("text-anchor", "end")
+    .attr("x", 110)
+    .attr("y", 300)
+    .text("Spotify Streams")
+    .style("font-family", "Baloo 2")
+    .style("font-size", "16px")
+    ;
+
+    // annotations
+    d3.select("svg")
+    .append("text")
+    .attr("x", 250)
+    .attr("y", 10)
+    .style("font-size", "12px")
+    .style("fill", "black")
+    .style("font-family", "Baloo 2")
+    .text("high spotify streams, low youtube views");
+
+    d3.select("svg")
+    .append("line")
+    .attr("x1", 340)
+    .attr("y1", 20)
+    .attr("x2", 325)
+    .attr("y2", 50)
+    .attr("stroke", "black")
+    .attr("stroke-width", 2);
+
+    d3.select("svg")
+    .append("text")
+    .attr("x", 1070)
+    .attr("y", 460)
+    .style("font-size", "12px")
+    .style("fill", "black")
+    .style("font-family", "Baloo 2")
+    .text("high youtube views, low spotify streams");
+
+    d3.select("svg")
+    .append("line")
+    .attr("x1", 1160)
+    .attr("y1", 470)
+    .attr("x2", 1145)
+    .attr("y2", 510)
+    .attr("stroke", "black")
+    .attr("stroke-width", 2);
+
+
 
 }
 </script>
